@@ -4,49 +4,43 @@ import { prisma } from '../../utils/prisma';
 
 export class OrderServiceControllers {
     async createOrderService(request: Request, response: Response) {
-        const { status, value } = request.body;
-        const { id } = request.params;
+        const { status, value, cliente, funcionario, pecas, serviço } = request.body;
 
         try {
-            const client = await prisma.client.findUnique({ where: { id: Number(id) } });
-            if (!client) {
-                return response.status(400).json("Cliente inexistente!")
-            }
 
-            const emploeey = await prisma.employees.findUnique({ where: { id: Number(id) } });
-            if (!emploeey) {
-                return response.status(400).json("Funcionario inexistente!")
-            }
-
-
-            const parts = await prisma.parts.findUnique({ where: { id: Number(id) } });
-            if (!parts) {
-                return response.status(400).json("Peças inexistente!")
-            }
-
-
-            const service = await prisma.services.findUnique({ where: { id: Number(id) } });
-            if (!service) {
-                return response.status(400).json("Serviço inexistente!")
-            }
-
-
-
-            const os = await prisma.order_Service.create({
+            const file = await prisma.order_Service.create({
                 data: {
-                    status,
-                    value,
-                    clientId: client?.id,
-                    employeesId: emploeey?.id,
-                    partsId: parts?.id,
-                    servicesId: service?.id
-                }
+                    status, value,
+                    Client: {
+                        connect: {
+                            name: cliente
+                        }
+                    },
+                    Employees: {
+                        connect: {
+                            name: funcionario
+                        }
+                    },
+
+                    Parts: {
+                        connect: {
+                            description: pecas
+                        }
+                    },
+                    Services: {
+                        connect: {
+                            description: serviço
+                        }
+                    }
+
+                },
+
             });
-            return response.status(201).json(os)
+            return response.status(201).json(file)
 
 
         } catch (error) {
-            return response.status(500).json(error);
+            return response.status(500).json(error.message);
         }
     }
 
