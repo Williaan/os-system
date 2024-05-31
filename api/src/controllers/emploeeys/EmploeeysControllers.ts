@@ -31,7 +31,7 @@ export class EmploeeysControllers {
         const { id } = request.params;
 
         try {
-            const emploeey = await prisma.employees.findUnique({ where: { id: Number(id) } });
+            const emploeey = await prisma.employees.findUnique({ where: { id } });
 
             if (!emploeey) {
                 return response.status(400).json('Funcionário não encontrado!');
@@ -51,14 +51,14 @@ export class EmploeeysControllers {
 
         try {
 
-            const emploeeyExist = await prisma.employees.findUnique({ where: { id: Number(id) } });
+            const emploeeyExist = await prisma.employees.findUnique({ where: { id } });
 
             if (!emploeeyExist) {
                 return response.status(400).json('Funcionário não encontrado!');
             }
 
             await prisma.employees.update({
-                where: { id: Number(id) },
+                where: { id },
                 data: {
                     name, cpf, phone, cargo
                 }
@@ -76,13 +76,13 @@ export class EmploeeysControllers {
         const { id } = request.params;
 
         try {
-            const emploeeyExist = await prisma.employees.findUnique({ where: { id: Number(id) } });
+            const emploeeyExist = await prisma.employees.findUnique({ where: { id } });
 
             if (!emploeeyExist) {
                 return response.status(400).json('Funcionário não encontrado!');
             }
 
-            await prisma.employees.delete({ where: { id: Number(id) } });
+            await prisma.employees.delete({ where: { id } });
 
             return response.status(200).json('Deletado com sucesso!');
 

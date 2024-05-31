@@ -7,7 +7,13 @@ export class ServiceControllers {
         const { description, value } = request.body;
 
         try {
-            const parts = await prisma.services.create({
+            const service = await prisma.services.findUnique({ where: { description } });
+
+            if (service) {
+                return response.status(401).json({ Mensagem: 'Esse serviço já esta cadastrado!' });
+            }
+
+            await prisma.services.create({
                 data: {
                     description, value
                 }
@@ -26,7 +32,7 @@ export class ServiceControllers {
         const { id } = request.params;
 
         try {
-            const services = await prisma.services.findUnique({ where: { id: Number(id) } });
+            const services = await prisma.services.findUnique({ where: { id } });
 
             if (!services) {
                 return response.status(400).json("Serviço não encontrado!");
@@ -47,14 +53,14 @@ export class ServiceControllers {
 
 
         try {
-            const partsExist = await prisma.services.findUnique({ where: { id: Number(id) } });
+            const partsExist = await prisma.services.findUnique({ where: { id } });
 
             if (!partsExist) {
                 return response.status(400).json("Serviço não encontrado!")
             }
 
             await prisma.services.update({
-                where: { id: Number(id) },
+                where: { id },
                 data: {
                     description, value
                 }
@@ -74,13 +80,13 @@ export class ServiceControllers {
         const { id } = request.params;
 
         try {
-            const serviceExist = await prisma.services.findUnique({ where: { id: Number(id) } });
+            const serviceExist = await prisma.services.findUnique({ where: { id } });
 
             if (!serviceExist) {
-                return response.status(400).json("Produto não encontrado!")
+                return response.status(400).json("Serviço não encontrado!")
             }
 
-            await prisma.services.delete({ where: { id: Number(id) } });
+            await prisma.services.delete({ where: { id } });
 
             return response.status(200).json("Deletado com sucesso!")
 
