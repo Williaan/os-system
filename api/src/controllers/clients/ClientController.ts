@@ -49,14 +49,14 @@ export class ClientController {
         const { id } = request.params;
 
         try {
-            const clientExist = await prisma.client.findUnique({ where: { id: Number(id) } });
+            const clientExist = await prisma.client.findUnique({ where: { id } });
 
             if (!clientExist) {
                 return response.status(400).json("Esse cliente não foi encontrado!");
             }
 
 
-            const readClient = await prisma.client.findUnique({ where: { id: Number(id) } });
+            const readClient = await prisma.client.findUnique({ where: { id } });
 
 
             return response.status(200).json(readClient);
@@ -75,7 +75,7 @@ export class ClientController {
 
 
         try {
-            const clientExist = await prisma.client.findUnique({ where: { id: Number(id) } });
+            const clientExist = await prisma.client.findUnique({ where: { id } });
 
             if (!clientExist) {
                 return response.status(400).json("Esse cliente não foi encontrado!");
@@ -83,7 +83,7 @@ export class ClientController {
 
 
             const upClient = await prisma.client.update({
-                where: { id: Number(id) },
+                where: { id },
                 data: {
                     name,
                     email,
@@ -112,13 +112,13 @@ export class ClientController {
         const { id } = request.params;
 
         try {
-            const clientExist = await prisma.client.findUnique({ where: { id: Number(id) } });
+            const clientExist = await prisma.client.findUnique({ where: { id } });
 
             if (!clientExist) {
                 return response.status(400).json("Esse cliente não foi encontrado!");
             }
 
-            await prisma.client.delete({ where: { id: Number(id) } });
+            await prisma.client.delete({ where: { id } });
 
             return response.status(201).json({ mensagem: 'Deletado com sucesso!' });
 

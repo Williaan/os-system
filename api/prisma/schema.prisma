@@ -19,8 +19,8 @@ model User {
 }
 
 model Client {
-    id         Int      @id @default(autoincrement())
-    name       String
+    id         String   @id @default(uuid())
+    name       String   @unique
     email      String   @unique
     cnpj       String   @unique
     phone      String
@@ -32,67 +32,69 @@ model Client {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    os Order_Service[]
+    orderService Order_Service[]
 
     @@map("client")
 }
 
 model Employees {
-    id         Int      @id @default(autoincrement())
-    name       String
+    id         String   @id @default(uuid())
+    name       String   @unique
     cpf        String   @unique
     phone      String
     cargo      String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
-    os Order_Service[]
+    orderService Order_Service[]
 
     @@map("employees")
 }
 
 model Parts {
-    id          Int      @id @default(autoincrement())
-    description String
+    id          String   @id @default(uuid())
+    description String   @unique
     category    String
     brand       String
-    serial      String
+    serial      String   @unique
     value       String
     created_at  DateTime @default(now())
     updated_at  DateTime @updatedAt
 
-    os Order_Service[]
+    orderService Order_Service[]
 
     @@map("parts")
 }
 
 model Services {
-    id          Int      @id @default(autoincrement())
-    description String
+    id          String   @id @default(uuid())
+    description String   @unique
     value       String
     created_at  DateTime @default(now())
     updated_at  DateTime @updatedAt
 
-    os Order_Service[]
+    orderService Order_Service[]
 
     @@map("services")
 }
 
 model Order_Service {
-    id     Int    @id @default(autoincrement())
-    status String
-    value  String
+    id          String   @id @default(uuid())
+    description String
+    brand       String
+    serial      String   @unique
+    status      String
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
 
-    created_at  DateTime   @default(now())
-    updated_at  DateTime   @updatedAt
     Client      Client?    @relation(fields: [clientId], references: [id])
-    clientId    Int?
+    clientId    String?
     Employees   Employees? @relation(fields: [employeesId], references: [id])
-    employeesId Int?
+    employeesId String?
     Parts       Parts?     @relation(fields: [partsId], references: [id])
-    partsId     Int?
+    partsId     String?
     Services    Services?  @relation(fields: [servicesId], references: [id])
-    servicesId  Int?
+    servicesId  String?
 
     @@map("order_service")
 }

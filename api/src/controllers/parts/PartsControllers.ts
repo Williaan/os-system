@@ -7,7 +7,13 @@ export class PartsControllers {
         const { description, category, brand, serial, value } = request.body;
 
         try {
-            const parts = await prisma.parts.create({
+            const parts = await prisma.parts.findUnique({ where: { serial } });
+
+            if (parts) {
+                return response.status(401).json({ Mensagem: 'Esse número de série já esta cadastrado!' });
+            }
+
+            await prisma.parts.create({
                 data: {
                     description, category, brand, serial, value
                 }
@@ -26,7 +32,7 @@ export class PartsControllers {
         const { id } = request.params;
 
         try {
-            const parts = await prisma.parts.findUnique({ where: { id: Number(id) } });
+            const parts = await prisma.parts.findUnique({ where: { id } });
 
             if (!parts) {
                 return response.status(400).json("Produto não encontrado!");
@@ -47,14 +53,14 @@ export class PartsControllers {
 
 
         try {
-            const partsExist = await prisma.parts.findUnique({ where: { id: Number(id) } });
+            const partsExist = await prisma.parts.findUnique({ where: { id } });
 
             if (!partsExist) {
                 return response.status(400).json("Produto não encontrado!")
             }
 
             await prisma.parts.update({
-                where: { id: Number(id) },
+                where: { id },
                 data: {
                     description, category, brand, serial, value
                 }
@@ -74,13 +80,13 @@ export class PartsControllers {
         const { id } = request.params;
 
         try {
-            const partsExist = await prisma.parts.findUnique({ where: { id: Number(id) } });
+            const partsExist = await prisma.parts.findUnique({ where: { id } });
 
             if (!partsExist) {
                 return response.status(400).json("Produto não encontrado!")
             }
 
-            await prisma.parts.delete({ where: { id: Number(id) } });
+            await prisma.parts.delete({ where: { id } });
 
             return response.status(200).json("Deletado com sucesso!")
 

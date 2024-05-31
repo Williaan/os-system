@@ -4,13 +4,18 @@ import { prisma } from '../../utils/prisma';
 
 export class OrderServiceControllers {
     async createOrderService(request: Request, response: Response) {
-        const { status, value, cliente, funcionario, pecas, serviço } = request.body;
+        const { description, brand, serial, status, cliente, tecnico, pecas, service } = request.body;
 
         try {
+            const parts = await prisma.order_Service.findUnique({ where: { serial } });
 
-            const file = await prisma.order_Service.create({
+            if (parts) {
+                return response.status(401).json({ Mensagem: 'Esse número de série já esta cadastrado!' });
+            }
+
+            const order = await prisma.order_Service.create({
                 data: {
-                    status, value,
+                    description, brand, serial, status,
                     Client: {
                         connect: {
                             name: cliente
@@ -18,10 +23,9 @@ export class OrderServiceControllers {
                     },
                     Employees: {
                         connect: {
-                            name: funcionario
+                            name: tecnico
                         }
                     },
-
                     Parts: {
                         connect: {
                             description: pecas
@@ -29,18 +33,18 @@ export class OrderServiceControllers {
                     },
                     Services: {
                         connect: {
-                            description: serviço
+                            description: service
                         }
-                    }
-
-                },
+                    },
+                }
 
             });
-            return response.status(201).json(file)
+
+            return response.status(201).json(order)
 
 
         } catch (error) {
-            return response.status(500).json(error.message);
+            return response.status(500).json(error);
         }
     }
 
@@ -50,28 +54,38 @@ export class OrderServiceControllers {
 
             const readAllEmploeeys = await prisma.order_Service.findMany({
                 select: {
+                    id: true,
+                    description: true,
+                    brand: true,
+                    serial: true,
                     status: true,
-                    value: true,
                     Client: {
                         select: {
+                            id: true,
                             name: true,
+                            email: true,
+                            phone: true
                         }
                     },
                     Employees: {
                         select: {
+                            id: true,
                             name: true
                         },
 
                     },
                     Services: {
                         select: {
+                            id: true,
                             description: true,
                             value: true
                         }
                     },
                     Parts: {
                         select: {
+                            id: true,
                             description: true,
+                            brand: true,
                             value: true,
                         }
                     }
@@ -83,5 +97,26 @@ export class OrderServiceControllers {
         } catch (error) {
             return response.status(500).json(error);
         }
+    }
+
+
+    async deleteOs(request: Request, response: Response) {
+        const { id } = request.params;
+
+        try {
+            const osExists = await prisma.services.findUnique({ where: { id } });
+
+            if (!osExists) {
+                return response.status(400).json("Ordem de Serviço não encontrado!")
+            }
+
+            await prisma.order_Service.delete({ where: { id } });
+
+            return response.status(200).json("Deletado com sucesso!")
+
+        } catch (error) {
+            return response.status(500).json(error);
+        }
+
     }
 }
