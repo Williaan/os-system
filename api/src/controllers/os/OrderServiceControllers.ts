@@ -100,11 +100,64 @@ export class OrderServiceControllers {
     }
 
 
+    async updateOs(request: Request, response: Response) {
+        const { id } = request.params;
+        const { description, brand, serial, status, cliente, tecnico, pecas, service } = request.body;
+
+
+        try {
+            const osExists = await prisma.order_Service.findUnique({ where: { id } });
+
+            if (!osExists) {
+                return response.status(400).json("Ordem de Serviço não encontrado!")
+            }
+
+            const parts = await prisma.order_Service.findUnique({ where: { serial } });
+
+            if (parts) {
+                return response.status(401).json({ Mensagem: 'Esse número de série já esta cadastrado!' });
+            }
+
+            const order = await prisma.order_Service.update({
+                where: { id },
+                data: {
+                    description, brand, serial, status,
+                    Client: {
+                        connect: {
+                            name: cliente
+                        }
+                    },
+                    Employees: {
+                        connect: {
+                            name: tecnico
+                        }
+                    },
+                    Parts: {
+                        connect: {
+                            description: pecas
+                        }
+                    },
+                    Services: {
+                        connect: {
+                            description: service
+                        }
+                    },
+                }
+
+            });
+
+            return response.status(201).json('Atualizado com sucesso!')
+
+        } catch (error) {
+            return response.status(500).json(error);
+        }
+    }
+
     async deleteOs(request: Request, response: Response) {
         const { id } = request.params;
 
         try {
-            const osExists = await prisma.services.findUnique({ where: { id } });
+            const osExists = await prisma.order_Service.findUnique({ where: { id } });
 
             if (!osExists) {
                 return response.status(400).json("Ordem de Serviço não encontrado!")
@@ -118,5 +171,25 @@ export class OrderServiceControllers {
             return response.status(500).json(error);
         }
 
+    }
+
+
+    async readOs(request: Request, response: Response) {
+        const { id } = request.params;
+
+        try {
+            const osExists = await prisma.order_Service.findUnique({ where: { id } });
+
+            if (!osExists) {
+                return response.status(400).json("Ordem de Serviço não encontrado!")
+            }
+
+            const os = await prisma.order_Service.findUnique({ where: { id } });
+
+            return response.status(200).json(os)
+
+        } catch (error) {
+            return response.status(500).json(error);
+        }
     }
 }

@@ -54,5 +54,7 @@ router.get('/read-service', serviceControllers.readAllService);
 
 //O.S
 router.post('/create-os', orderServicecontrollers.createOrderService);
-router.get('/readall-os', orderServicecontrollers.readAllOs);
+router.get('/read-os/:id', orderServicecontrollers.readOs);
+router.put('/update-os/:id', orderServicecontrollers.updateOs);
 router.delete('/delete-os/:id', orderServicecontrollers.deleteOs);
+router.get('/readall-os', orderServicecontrollers.readAllOs);
