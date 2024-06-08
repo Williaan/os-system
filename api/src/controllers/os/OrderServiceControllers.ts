@@ -112,12 +112,6 @@ export class OrderServiceControllers {
                 return response.status(400).json("Ordem de Serviço não encontrado!")
             }
 
-            const parts = await prisma.order_Service.findUnique({ where: { serial } });
-
-            if (parts) {
-                return response.status(401).json({ Mensagem: 'Esse número de série já esta cadastrado!' });
-            }
-
             const order = await prisma.order_Service.update({
                 where: { id },
                 data: {
